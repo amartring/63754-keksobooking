@@ -39,12 +39,12 @@
     'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
     'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
   ];
-  var LOCATION_Y = {
+  var LIMIT_Y = {
     min: 130,
     max: 630
   };
 
-  var adverts = [];
+  var map = document.querySelector('.map');
 
   var getUrls = function (min, max, begin, end) {
     var newArray = [];
@@ -53,8 +53,6 @@
     }
     return newArray;
   };
-
-  var avatars = getUrls(AVATAR.minNumber, AVATAR.maxNumber, AVATAR.begin, AVATAR.end);
 
   var getFeatures = function () {
     var array = [];
@@ -66,8 +64,28 @@
     return array;
   };
 
+  var getCoordsX = function (block) {
+    var limitX = block.getBoundingClientRect();
+    return {
+      min: Math.round(limitX.left),
+      max: Math.round(limitX.right),
+    };
+  };
+
+  var getLocation = function () {
+    var location = [];
+    var limitX = getCoordsX(map);
+    for (var i = 0; i < OBJECTS_COUNT; i++) {
+      location.push({});
+      location[i].x = window.util.getRandomNumber(limitX.min, limitX.max);
+      location[i].y = window.util.getRandomNumber(LIMIT_Y.min, LIMIT_Y.max);
+    }
+    return location;
+  };
+
   var getAuthors = function () {
     var authors = [];
+    var avatars = getUrls(AVATAR.minNumber, AVATAR.maxNumber, AVATAR.begin, AVATAR.end);
     window.util.shuffleArray(avatars);
     for (var i = 0; i < OBJECTS_COUNT; i++) {
       authors.push({});
@@ -76,12 +94,15 @@
     return authors;
   };
 
+  var location = getLocation();
+
   var getOffers = function () {
     var offers = [];
     window.util.shuffleArray(TITLES);
     for (var i = 0; i < OBJECTS_COUNT; i++) {
       offers.push({});
       offers[i].title = TITLES[i];
+      offers[i].address = location[i].x + ', ' + location[i].y;
       offers[i].price = window.util.getRandomNumber(PRICE.min, PRICE.max);
       offers[i].type = TYPE[window.util.getRandomNumber(0, TYPE.length - 1)];
       offers[i].rooms = window.util.getRandomNumber(ROOM.min, ROOM.max);
@@ -95,28 +116,23 @@
     return offers;
   };
 
-  // var getLocation = function () {
-  //   var location = [];
-  //   for (var i = 0; i < OBJECTS_COUNT; i++) {
-  //     offers.push({});
-  //     location[i].title = TITLES[i];
-  //     location[i].y = getRandomNumber(LOCATION_Y.min, LOCATION_Y.max);
-  //   }
-  //   return location;
-  // };
-
   var getAdvertsArray = function () {
+    var adverts = [];
     var authors = getAuthors();
     var offers = getOffers();
     for (var i = 0; i < OBJECTS_COUNT; i++) {
       adverts.push({});
       adverts[i].author = authors[i];
       adverts[i].offer = offers[i];
+      adverts[i].location = location[i];
     }
     return adverts;
   };
 
+  map.classList.remove('map--faded');
+
   window.main = {
+    map: map,
     getAdvertsArray: getAdvertsArray
   };
 })();

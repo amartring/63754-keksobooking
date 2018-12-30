@@ -1,7 +1,32 @@
 'use strict';
 
 (function () {
-  var PRICE_UNIT = '₽/ночь';
+  var LINK = ' для ';
+  var FEATURE = {
+    teg: 'li',
+    classFirst: 'popup__feature',
+    classSecond: 'popup__feature--'
+  };
+  var CHECK = {
+    in: 'Заезд после ',
+    out: ', выезд до '
+  };
+  var IMG = {
+    teg: 'img',
+    class: 'popup__photo',
+    width: 45,
+    height: 40,
+    alt: 'Фотография жилья'
+  };
+  var PIN = {
+    width: 50,
+    height: 70
+  };
+
+  var Unit = {
+    PRICE: '₽/ночь',
+    POSITION: 'px'
+  };
   var Building = {
     FLAT: 'Квартира',
     BUNGALO: 'Бунгало',
@@ -30,28 +55,12 @@
       STRING: 'гостей'
     }
   };
-  var LINK = ' для ';
-  var FEATURE = {
-    teg: 'li',
-    classFirst: 'popup__feature',
-    classSecond: 'popup__feature--'
-  };
-  var CHECK = {
-    in: 'Заезд после ',
-    out: ', выезд до '
-  };
-  var IMG = {
-    teg: 'img',
-    class: 'popup__photo',
-    width: 45,
-    height: 40,
-    alt: 'Фотография жилья'
-  };
 
-  var map = document.querySelector('.map');
-  var mapFiltersContainer = map.querySelector('.map__filters-container');
+  var mapPins = window.main.map.querySelector('.map__pins');
+  var mapFiltersContainer = window.main.map.querySelector('.map__filters-container');
 
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
   var removeChildren = function (element) {
     while (element.lastChild) {
@@ -85,6 +94,25 @@
 
   var adverts = window.main.getAdvertsArray();
 
+  var createPin = function (advert) {
+    var pinElement = pinTemplate.cloneNode(true);
+    pinElement.style.left = (advert.location.x - PIN.width / 2) + Unit.POSITION;
+    pinElement.style.top = (advert.location.y - PIN.height) + Unit.POSITION;
+    pinElement.querySelector('img').src = advert.author.avatar;
+    pinElement.querySelector('img').alt = advert.offer.title;
+    return pinElement;
+  };
+
+  var renderPins = function () {
+    var fragment = document.createDocumentFragment();
+    for (var i = 0; i < adverts.length; i++) {
+      fragment.appendChild(createPin(adverts[i]));
+    }
+    mapPins.appendChild(fragment);
+  };
+
+  renderPins();
+
   var createCard = function (advert) {
     var cardElement = cardTemplate.cloneNode(true);
     var roomString = getRoomOffer(advert.offer.rooms);
@@ -92,7 +120,7 @@
     cardElement.querySelector('.popup__avatar').src = advert.author.avatar;
     cardElement.querySelector('.popup__title').textContent = advert.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = advert.offer.address;
-    cardElement.querySelector('.popup__text--price').textContent = advert.offer.price + PRICE_UNIT;
+    cardElement.querySelector('.popup__text--price').textContent = advert.offer.price + Unit.PRICE;
     cardElement.querySelector('.popup__type').textContent = Building[(advert.offer.type).toUpperCase()];
     cardElement.querySelector('.popup__text--capacity')
       .textContent = advert.offer.rooms + ' ' + roomString + LINK + advert.offer.guests + ' ' + guestString;
@@ -115,5 +143,5 @@
 
   var fragment = document.createDocumentFragment();
   fragment.appendChild(createCard(adverts[0]));
-  map.insertBefore(fragment, mapFiltersContainer);
+  window.main.map.insertBefore(fragment, mapFiltersContainer);
 })();
