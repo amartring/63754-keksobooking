@@ -39,7 +39,7 @@
       STRING: 'комната'
     },
     max: {
-      COUNT: 5,
+      COUNT: 100,
       STRING: 'комнат'
     },
     other: {
@@ -103,16 +103,6 @@
     return pinElement;
   };
 
-  var renderPins = function () {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < adverts.length; i++) {
-      fragment.appendChild(createPin(adverts[i]));
-    }
-    mapPins.appendChild(fragment);
-  };
-
-  renderPins();
-
   var createCard = function (advert) {
     var cardElement = cardTemplate.cloneNode(true);
     var roomString = getRoomOffer(advert.offer.rooms);
@@ -141,7 +131,52 @@
     return cardElement;
   };
 
-  var fragment = document.createDocumentFragment();
-  fragment.appendChild(createCard(adverts[0]));
-  window.main.map.insertBefore(fragment, mapFiltersContainer);
+  var renderCard = function (advert) {
+    var fragment = document.createDocumentFragment();
+    fragment.appendChild(createCard(advert));
+    window.main.map.insertBefore(fragment, mapFiltersContainer);
+
+    var card = window.main.map.querySelector('.map__card');
+    var cardClose = card.querySelector('.popup__close');
+
+    var closeCard = function () {
+      window.main.map.removeChild(card);
+      document.removeEventListener('keydown', onCardEscPress);
+    };
+
+    var onCardCloseClick = function () {
+      closeCard();
+    };
+
+    var onCardEscPress = function (evt) {
+      if (evt.keyCode === window.main.KeyCode.ESC) {
+        closeCard();
+      }
+    };
+
+    document.addEventListener('keydown', onCardEscPress);
+    cardClose.addEventListener('click', onCardCloseClick);
+  };
+
+  var onPinClick = function (thumbnail, advert) {
+    thumbnail.addEventListener('click', function () {
+      renderCard(advert);
+    });
+  };
+
+  var renderPins = function () {
+    var fragment = document.createDocumentFragment();
+    for (var i = 0; i < adverts.length; i++) {
+      var currentPin = createPin(adverts[i]);
+      fragment.appendChild(currentPin);
+      onPinClick(currentPin, adverts[i]);
+    }
+    mapPins.appendChild(fragment);
+  };
+
+  window.render = {
+    PIN: PIN,
+    Unit: Unit,
+    renderPins: renderPins
+  };
 })();

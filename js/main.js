@@ -23,10 +23,7 @@
     max: 1000000
   };
   var TYPE = ['palace', 'flat', 'house', 'bungalo'];
-  var ROOM = {
-    min: 1,
-    max: 5
-  };
+  var ROOMS = [1, 2, 3, 100];
   var GUEST = {
     min: 1,
     max: 10
@@ -43,8 +40,12 @@
     min: 130,
     max: 630
   };
+  var KeyCode = {
+    ESC: 27
+  };
 
   var map = document.querySelector('.map');
+  var mainPin = map.querySelector('.map__pin--main');
 
   var getUrls = function (min, max, begin, end) {
     var newArray = [];
@@ -105,7 +106,7 @@
       offers[i].address = location[i].x + ', ' + location[i].y;
       offers[i].price = window.util.getRandomNumber(PRICE.min, PRICE.max);
       offers[i].type = TYPE[window.util.getRandomNumber(0, TYPE.length - 1)];
-      offers[i].rooms = window.util.getRandomNumber(ROOM.min, ROOM.max);
+      offers[i].rooms = ROOMS[window.util.getRandomNumber(0, ROOMS.length - 1)];
       offers[i].guests = window.util.getRandomNumber(GUEST.min, GUEST.max);
       offers[i].checkin = CHECKIN[window.util.getRandomNumber(0, CHECKIN.length - 1)];
       offers[i].checkout = CHECKOUT[window.util.getRandomNumber(0, CHECKOUT.length - 1)];
@@ -129,10 +130,23 @@
     return adverts;
   };
 
-  map.classList.remove('map--faded');
+  var getMainPinInfo = function () {
+    var mainPinInfo = mainPin.getBoundingClientRect();
+    return {
+      width: mainPinInfo.width,
+      height: mainPinInfo.height,
+      x: parseInt(mainPin.style.left, 10),
+      y: parseInt(mainPin.style.top, 10)
+    };
+  };
 
   window.main = {
+    KeyCode: KeyCode,
+    LIMIT_Y: LIMIT_Y,
     map: map,
-    getAdvertsArray: getAdvertsArray
+    mainPin: mainPin,
+    getCoordsX: getCoordsX,
+    getAdvertsArray: getAdvertsArray,
+    getMainPinInfo: getMainPinInfo
   };
 })();
