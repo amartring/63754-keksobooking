@@ -22,7 +22,7 @@
     min: 1000,
     max: 1000000
   };
-  var TYPE = ['palace', 'flat', 'house', 'bungalo'];
+  var TYPES = ['palace', 'flat', 'house', 'bungalo'];
   var ROOMS = [1, 2, 3, 100];
   var GUEST = {
     min: 1,
@@ -105,7 +105,7 @@
       offers[i].title = TITLES[i];
       offers[i].address = location[i].x + ', ' + location[i].y;
       offers[i].price = window.util.getRandomNumber(PRICE.min, PRICE.max);
-      offers[i].type = TYPE[window.util.getRandomNumber(0, TYPE.length - 1)];
+      offers[i].type = TYPES[window.util.getRandomNumber(0, TYPES.length - 1)];
       offers[i].rooms = ROOMS[window.util.getRandomNumber(0, ROOMS.length - 1)];
       offers[i].guests = window.util.getRandomNumber(GUEST.min, GUEST.max);
       offers[i].checkin = CHECKIN[window.util.getRandomNumber(0, CHECKIN.length - 1)];

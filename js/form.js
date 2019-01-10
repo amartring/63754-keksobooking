@@ -4,7 +4,7 @@
   var NEEDLE_HEIGHT = 22;
   var MAX_PRICE = 1000000;
 
-  var TYPE = {
+  var AppartmentType = {
     bungalo: 'bungalo',
     flat: 'flat',
     house: 'house',
@@ -39,6 +39,7 @@
   var mapFilters = window.main.map.querySelectorAll('.map__filter');
   var notiseForm = document.querySelector('.ad-form');
   var notiseFormFielsets = notiseForm.querySelectorAll('fieldset');
+  var titleField = notiseForm.querySelector('#title');
   var addressField = notiseForm.querySelector('#address');
   var typeField = notiseForm.querySelector('#type');
   var priceField = notiseForm.querySelector('#price');
@@ -54,6 +55,13 @@
     for (var i = 0; i < mapFilters.length; i++) {
       mapFilters[i].disabled = true;
     }
+
+    typeField.removeEventListener('change', validityPrice);
+    priceField.removeEventListener('change', validityPrice);
+    timeInField.removeEventListener('change', validityTimeOut);
+    timeOutField.removeEventListener('change', validityTimeIn);
+    roomNumberField.removeEventListener('change', validityRoomsAndCapacity);
+    capacityField.removeEventListener('change', validityRoomsAndCapacity);
   };
 
   var activateForm = function () {
@@ -66,6 +74,19 @@
     }
     window.render.renderPins();
     addressField.setAttribute('readonly', true);
+
+    typeField.addEventListener('change', validityPrice);
+    priceField.addEventListener('change', validityPrice);
+    timeInField.addEventListener('change', validityTimeOut);
+    timeOutField.addEventListener('change', validityTimeIn);
+    roomNumberField.addEventListener('change', validityRoomsAndCapacity);
+    capacityField.addEventListener('change', validityRoomsAndCapacity);
+  };
+
+  var initForm = function (title, price) {
+    title.setAttribute('minlength', 30);
+    title.setAttribute('maxlength', 100);
+    price.setAttribute('required', true);
   };
 
   var getPinPosition = function () {
@@ -85,9 +106,9 @@
 
   var validityPrice = function () {
     var minPrice = MinPrice.BUNGALO;
-    if (typeField.value === TYPE.flat) {
+    if (typeField.value === AppartmentType.flat) {
       minPrice = MinPrice.FLAT;
-    } else if (typeField.value === TYPE.house) {
+    } else if (typeField.value === AppartmentType.house) {
       minPrice = MinPrice.HOUSE;
     } else {
       minPrice = MinPrice.PALACE;
@@ -119,15 +140,10 @@
     }
   };
 
-  typeField.addEventListener('change', validityPrice);
-  priceField.addEventListener('change', validityPrice);
-  timeInField.addEventListener('change', validityTimeOut);
-  timeOutField.addEventListener('change', validityTimeIn);
-  roomNumberField.addEventListener('change', validityRoomsAndCapacity);
-  capacityField.addEventListener('change', validityRoomsAndCapacity);
-
   deactivateForm();
   getPinPosition();
+
+  document.addEventListener('DOMContentLoaded', initForm.bind(null, titleField, priceField));
 
   window.filters = {
     activateForm: activateForm,

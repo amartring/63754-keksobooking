@@ -56,7 +56,7 @@
     }
   };
 
-  var mapPins = window.main.map.querySelector('.map__pins');
+  var mapPin = window.main.map.querySelector('.map__pins');
   var mapFiltersContainer = window.main.map.querySelector('.map__filters-container');
 
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
@@ -166,12 +166,12 @@
 
   var renderPins = function () {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < adverts.length; i++) {
-      var currentPin = createPin(adverts[i]);
+    adverts.forEach(function (item) {
+      var currentPin = createPin(item);
       fragment.appendChild(currentPin);
-      onPinClick(currentPin, adverts[i]);
-    }
-    mapPins.appendChild(fragment);
+      onPinClick(currentPin, item);
+    });
+    mapPin.appendChild(fragment);
   };
 
   window.render = {
