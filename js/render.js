@@ -1,28 +1,6 @@
 'use strict';
 
 (function () {
-  var LINK = ' для ';
-  var FEATURE = {
-    teg: 'li',
-    classFirst: 'popup__feature',
-    classSecond: 'popup__feature--'
-  };
-  var CHECK = {
-    in: 'Заезд после ',
-    out: ', выезд до '
-  };
-  var IMG = {
-    teg: 'img',
-    class: 'popup__photo',
-    width: 45,
-    height: 40,
-    alt: 'Фотография жилья'
-  };
-  var PIN = {
-    width: 50,
-    height: 70
-  };
-
   var Unit = {
     PRICE: '₽/ночь',
     POSITION: 'px'
@@ -85,26 +63,24 @@
   };
 
   var createPhotos = function (item) {
-    var photo = window.util.makeElement(IMG.teg, IMG.class, IMG.alt);
+    var photo = window.util.makeElement(window.constants.IMG.teg, window.constants.IMG.class, window.constants.IMG.alt);
     photo.src = item;
-    photo.width = IMG.width;
-    photo.height = IMG.height;
+    photo.width = window.constants.IMG.width;
+    photo.height = window.constants.IMG.height;
     return photo;
   };
 
-  var adverts = window.main.getAdvertsArray();
-
   var createPin = function (advert) {
     var pinElement = pinTemplate.cloneNode(true);
-    pinElement.style.left = (advert.location.x - PIN.width / 2) + Unit.POSITION;
-    pinElement.style.top = (advert.location.y - PIN.height) + Unit.POSITION;
+    pinElement.style.left = (advert.location.x - window.constants.PIN.width / 2) + Unit.POSITION;
+    pinElement.style.top = (advert.location.y - window.constants.PIN.height) + Unit.POSITION;
     pinElement.querySelector('img').src = advert.author.avatar;
     pinElement.querySelector('img').alt = advert.offer.title;
     return pinElement;
   };
 
   var createCard = function (advert) {
-    var cardElement = cardTemplate.cloneNode(true);
+    var cardElement = window.main.map.querySelector('.popup');
     var roomString = getRoomOffer(advert.offer.rooms);
     var guestString = getGuestOffer(advert.offer.guests);
     cardElement.querySelector('.popup__avatar').src = advert.author.avatar;
@@ -113,14 +89,17 @@
     cardElement.querySelector('.popup__text--price').textContent = advert.offer.price + Unit.PRICE;
     cardElement.querySelector('.popup__type').textContent = Building[(advert.offer.type).toUpperCase()];
     cardElement.querySelector('.popup__text--capacity')
-      .textContent = advert.offer.rooms + ' ' + roomString + LINK + advert.offer.guests + ' ' + guestString;
+      .textContent = advert.offer.rooms + ' ' + roomString + window.constants.LINK + advert.offer.guests + ' ' + guestString;
+    if (advert.offer.rooms === 0 || advert.offer.guests === 0) {
+      cardElement.querySelector('.popup__text--capacity').textContent = '';
+    }
     cardElement.querySelector('.popup__text--time')
-      .textContent = CHECK.in + advert.offer.checkin + CHECK.out + advert.offer.checkout;
+      .textContent = window.constants.CHECK.in + advert.offer.checkin + window.constants.CHECK.out + advert.offer.checkout;
 
     var featureList = cardElement.querySelector('.popup__features');
     removeChildren(cardElement.querySelector('.popup__features'));
     advert.offer.features.forEach(function (item) {
-      featureList.appendChild(window.util.makeElement(FEATURE.teg, FEATURE.classFirst, '', FEATURE.classSecond + item));
+      featureList.appendChild(window.util.makeElement(window.constants.FEATURE.teg, window.constants.FEATURE.classFirst, '', window.constants.FEATURE.classSecond + item));
     });
 
     cardElement.querySelector('.popup__description').textContent = advert.offer.description;
@@ -131,16 +110,12 @@
     return cardElement;
   };
 
-  var renderCard = function (advert) {
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(createCard(advert));
-    window.main.map.insertBefore(fragment, mapFiltersContainer);
-
+  var closeAnyCard = function () {
     var card = window.main.map.querySelector('.map__card');
     var cardClose = card.querySelector('.popup__close');
 
     var closeCard = function () {
-      window.main.map.removeChild(card);
+      window.main.map.querySelector('.popup').classList.add('hidden');
       document.removeEventListener('keydown', onCardEscPress);
     };
 
@@ -149,7 +124,7 @@
     };
 
     var onCardEscPress = function (evt) {
-      if (evt.keyCode === window.main.KeyCode.ESC) {
+      if (evt.key === window.main.Key.ESC) {
         closeCard();
       }
     };
@@ -158,15 +133,22 @@
     cardClose.addEventListener('click', onCardCloseClick);
   };
 
+  var showCard = function () {
+    var cardElement = window.main.map.querySelector('.popup');
+    cardElement.classList.remove('hidden');
+  };
+
   var onPinClick = function (thumbnail, advert) {
     thumbnail.addEventListener('click', function () {
-      renderCard(advert);
+      createCard(advert);
+      showCard();
+      closeAnyCard();
     });
   };
 
-  var renderPins = function () {
+  var renderPins = function (array) {
     var fragment = document.createDocumentFragment();
-    adverts.forEach(function (item) {
+    array.forEach(function (item) {
       var currentPin = createPin(item);
       fragment.appendChild(currentPin);
       onPinClick(currentPin, item);
@@ -174,9 +156,17 @@
     mapPin.appendChild(fragment);
   };
 
+  var makeCardBlock = function () {
+    var cardElement = cardTemplate.cloneNode(true);
+    var fragment = document.createDocumentFragment();
+    fragment.appendChild(cardElement);
+    cardElement.classList.add('hidden');
+    window.main.map.insertBefore(fragment, mapFiltersContainer);
+  };
+
   window.render = {
-    PIN: PIN,
     Unit: Unit,
+    makeCardBlock: makeCardBlock,
     renderPins: renderPins
   };
 })();
