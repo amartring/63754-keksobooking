@@ -110,13 +110,14 @@
     return cardElement;
   };
 
-  var closeAnyCard = function () {
+  var closeAnyCard = function (pin) {
     var card = window.main.map.querySelector('.map__card');
     var cardClose = card.querySelector('.popup__close');
 
     var closeCard = function () {
       window.main.map.querySelector('.popup').classList.add('hidden');
       document.removeEventListener('keydown', onCardEscPress);
+      pin.classList.remove('map__pin--active');
     };
 
     var onCardCloseClick = function () {
@@ -140,9 +141,14 @@
 
   var onPinClick = function (thumbnail, advert) {
     thumbnail.addEventListener('click', function () {
+      var pins = window.main.map.querySelectorAll('.map__pin');
+      for (var i = 0; i < pins.length; i++) {
+        pins[i].classList.remove('map__pin--active');
+      }
+      thumbnail.classList.add('map__pin--active');
       createCard(advert);
       showCard();
-      closeAnyCard();
+      closeAnyCard(thumbnail);
     });
   };
 
