@@ -62,6 +62,30 @@
   var capacityField = notiseForm.querySelector('#capacity');
   // var notiseFormFielsets = notiseForm.querySelectorAll('fieldset');
 
+  var Listener = {
+    FIELDS: [typeField, priceField, timeInField, timeOutField, roomNumberField, capacityField],
+    ACTIONS: [
+      function onTypeFieldChange() {
+        validityPrice();
+      },
+      function onPriceFieldChange() {
+        validityPrice();
+      },
+      function onTimeInFieldChange() {
+        validityTimeOut();
+      },
+      function onTimeOutFieldChange() {
+        validityTimeIn();
+      },
+      function onRoomNumberFieldChange() {
+        validityRoomsAndCapacity();
+      },
+      function onCapacityFieldChange() {
+        validityRoomsAndCapacity();
+      }
+    ]
+  };
+
   var deactivateForm = function () {
     notiseFormFielsets.forEach(function (item) {
       item.disabled = true;
@@ -70,12 +94,9 @@
       mapFilters[i].disabled = true;
     }
 
-    typeField.removeEventListener('change', validityPrice);
-    priceField.removeEventListener('change', validityPrice);
-    timeInField.removeEventListener('change', validityTimeOut);
-    timeOutField.removeEventListener('change', validityTimeIn);
-    roomNumberField.removeEventListener('change', validityRoomsAndCapacity);
-    capacityField.removeEventListener('change', validityRoomsAndCapacity);
+    Listener.FIELDS.forEach(function (item, index) {
+      removeListener(item, Listener.ACTIONS[index]);
+    });
   };
 
   var activateForm = function () {
@@ -88,53 +109,19 @@
     }
     window.render.makeCardBlock();
     window.backend.load(window.main.onGetSuccess);
-    // window.render.renderPins();
     addressField.setAttribute('readonly', true);
 
-    // var mapPins = document.querySelectorAll('.map__pin');
-
-    // for (i = 0; i < Listener.FIELDS.length; i++) {
-    //   addListener(Listener.FIELDS[i], Listener.ACTIONS[i]);
-    // }
-
-    // EventListener.FIELDS.forEach(function (item, index) {
-    //   addListener(EventListener.FIELDS[index], EventListener.ACTIONS[index]);
-    // });
-
-    typeField.addEventListener('change', onTypeFieldChange);
-    priceField.addEventListener('change', onPriceFieldChange);
-    timeInField.addEventListener('change', onTimeInFieldChange);
-    timeOutField.addEventListener('change', onTimeOutFieldChange);
-    roomNumberField.addEventListener('change', onRoomNumberFieldChange);
-    capacityField.addEventListener('change', onCapacityFieldChange);
+    Listener.FIELDS.forEach(function (item, index) {
+      addListener(item, Listener.ACTIONS[index]);
+    });
   };
 
-  // var addListener = function (element, action) {
-  //   return element.addEventListener('change', action);
-  // };
-
-  var onTypeFieldChange = function () {
-    validityPrice();
+  var addListener = function (element, action) {
+    return element.addEventListener('change', action);
   };
 
-  var onPriceFieldChange = function () {
-    validityPrice();
-  };
-
-  var onTimeInFieldChange = function () {
-    validityTimeOut();
-  };
-
-  var onTimeOutFieldChange = function () {
-    validityTimeIn();
-  };
-
-  var onRoomNumberFieldChange = function () {
-    validityRoomsAndCapacity();
-  };
-
-  var onCapacityFieldChange = function () {
-    validityRoomsAndCapacity();
+  var removeListener = function (element, action) {
+    return element.removeEventListener('change', action);
   };
 
   var initForm = function (title, price) {
@@ -154,9 +141,6 @@
     var newY = Math.round(mainPinInfo.y - mainPinInfo.height - window.constants.NEEDLE_HEIGHT);
     addressField.value = newX + ', ' + newY;
   };
-
-  // roomNumberField.children[0].removeAttribute('selected');
-  // capacityField.children[0].removeAttribute('selected');
 
   var validityPrice = function () {
     var minPrice = MinPrice.BUNGALO;
@@ -200,6 +184,7 @@
   document.addEventListener('DOMContentLoaded', initForm.bind(null, titleField, priceField));
 
   var onPostSuccess = function () {
+    titleField.textContent = '';
     window.backend.showSuccessMessage();
   };
 
