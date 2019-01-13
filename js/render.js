@@ -63,7 +63,7 @@
   };
 
   var createPhotos = function (item) {
-    var photo = window.util.makeElement(window.constants.IMG.teg, window.constants.IMG.class, window.constants.IMG.alt);
+    var photo = window.util.makeElement(window.constants.IMG.tag, window.constants.IMG.className, window.constants.IMG.alt);
     photo.src = item;
     photo.width = window.constants.IMG.width;
     photo.height = window.constants.IMG.height;
@@ -142,9 +142,9 @@
   var onPinClick = function (thumbnail, advert) {
     thumbnail.addEventListener('click', function () {
       var pins = window.main.map.querySelectorAll('.map__pin');
-      for (var i = 0; i < pins.length; i++) {
-        pins[i].classList.remove('map__pin--active');
-      }
+      pins.forEach(function (item) {
+        item.classList.remove('map__pin--active');
+      });
       thumbnail.classList.add('map__pin--active');
       createCard(advert);
       showCard();

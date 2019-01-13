@@ -29,11 +29,10 @@
   };
 
   var onGetSuccess = function (data) {
-    bids = data;
+    bids = data.slice();
     window.render.renderPins(bids);
+    console.log(bids);
   };
-
-  // window.backend.load(onGetSuccess);
 
   window.main = {
     Key: Key,

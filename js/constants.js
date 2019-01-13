@@ -12,8 +12,8 @@
     out: ', выезд до '
   };
   var IMG = {
-    teg: 'img',
-    class: 'popup__photo',
+    tag: 'img',
+    className: 'popup__photo',
     width: 45,
     height: 40,
     alt: 'Фотография жилья'

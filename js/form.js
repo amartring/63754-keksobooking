@@ -38,17 +38,6 @@
     MAX_LENGTH: 100
   };
 
-  // var Listener = {
-  //   FIELDS: [typeField, priceField, timeInField, timeOutField, roomNumberField, capacityField],
-  //   ACTIONS: [
-  //     onTypeFieldChange,
-  //     onPriceFieldChange,
-  //     onTimeInFieldChange,
-  //     onTimeOutFieldChange,
-  //     onRoomNumberFieldChange,
-  //     onCapacityFieldChange]
-  // };
-
   var mapFilters = window.main.map.querySelectorAll('.map__filter');
   var notiseForm = document.querySelector('.ad-form');
   var notiseFormFielsets = notiseForm.querySelectorAll('fieldset');
@@ -60,69 +49,6 @@
   var timeOutField = notiseForm.querySelector('#timeout');
   var roomNumberField = notiseForm.querySelector('#room_number');
   var capacityField = notiseForm.querySelector('#capacity');
-  // var notiseFormFielsets = notiseForm.querySelectorAll('fieldset');
-
-  var Listener = {
-    FIELDS: [typeField, priceField, timeInField, timeOutField, roomNumberField, capacityField],
-    ACTIONS: [
-      function onTypeFieldChange() {
-        validityPrice();
-      },
-      function onPriceFieldChange() {
-        validityPrice();
-      },
-      function onTimeInFieldChange() {
-        validityTimeOut();
-      },
-      function onTimeOutFieldChange() {
-        validityTimeIn();
-      },
-      function onRoomNumberFieldChange() {
-        validityRoomsAndCapacity();
-      },
-      function onCapacityFieldChange() {
-        validityRoomsAndCapacity();
-      }
-    ]
-  };
-
-  var deactivateForm = function () {
-    notiseFormFielsets.forEach(function (item) {
-      item.disabled = true;
-    });
-    for (var i = 0; i < mapFilters.length; i++) {
-      mapFilters[i].disabled = true;
-    }
-
-    Listener.FIELDS.forEach(function (item, index) {
-      removeListener(item, Listener.ACTIONS[index]);
-    });
-  };
-
-  var activateForm = function () {
-    notiseForm.classList.remove('ad-form--disabled');
-    notiseFormFielsets.forEach(function (item) {
-      item.removeAttribute('disabled');
-    });
-    for (var i = 0; i < mapFilters.length; i++) {
-      mapFilters[i].removeAttribute('disabled');
-    }
-    window.render.makeCardBlock();
-    window.backend.load(window.main.onGetSuccess);
-    addressField.setAttribute('readonly', true);
-
-    Listener.FIELDS.forEach(function (item, index) {
-      addListener(item, Listener.ACTIONS[index]);
-    });
-  };
-
-  var addListener = function (element, action) {
-    return element.addEventListener('change', action);
-  };
-
-  var removeListener = function (element, action) {
-    return element.removeEventListener('change', action);
-  };
 
   var initForm = function (title, price) {
     title.minLength = TitleRange.MIN_LENGTH;
@@ -176,6 +102,57 @@
     } else {
       capacityField.setCustomValidity('');
     }
+  };
+
+  var Listener = {
+    FIELDS: [typeField, priceField, timeInField, timeOutField, roomNumberField, capacityField],
+    ACTIONS: [
+      validityPrice,
+      validityPrice,
+      validityTimeOut,
+      validityTimeIn,
+      validityRoomsAndCapacity,
+      validityRoomsAndCapacity
+    ],
+    EVENT: 'change'
+  };
+
+  var addListener = function (element, action) {
+    return element.addEventListener(Listener.EVENT, action);
+  };
+
+  var removeListener = function (element, action) {
+    return element.removeEventListener(Listener.EVENT, action);
+  };
+
+  var deactivateForm = function () {
+    notiseFormFielsets.forEach(function (item) {
+      item.disabled = true;
+    });
+    for (var i = 0; i < mapFilters.length; i++) {
+      mapFilters[i].disabled = true;
+    }
+
+    Listener.FIELDS.forEach(function (item, index) {
+      removeListener(item, Listener.ACTIONS[index]);
+    });
+  };
+
+  var activateForm = function () {
+    notiseForm.classList.remove('ad-form--disabled');
+    notiseFormFielsets.forEach(function (item) {
+      item.removeAttribute('disabled');
+    });
+    for (var i = 0; i < mapFilters.length; i++) {
+      mapFilters[i].removeAttribute('disabled');
+    }
+    window.render.makeCardBlock();
+    window.backend.load(window.main.onGetSuccess);
+    addressField.setAttribute('readonly', true);
+
+    Listener.FIELDS.forEach(function (item, index) {
+      addListener(item, Listener.ACTIONS[index]);
+    });
   };
 
   deactivateForm();
