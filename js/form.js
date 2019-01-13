@@ -1,10 +1,7 @@
 'use strict';
 
 (function () {
-  var NEEDLE_HEIGHT = 22;
-  var MAX_PRICE = 1000000;
-
-  var TYPE = {
+  var AppartmentType = {
     bungalo: 'bungalo',
     flat: 'flat',
     house: 'house',
@@ -36,9 +33,26 @@
     ]
   };
 
+  var TitleRange = {
+    MIN_LENGTH: 30,
+    MAX_LENGTH: 100
+  };
+
+  // var Listener = {
+  //   FIELDS: [typeField, priceField, timeInField, timeOutField, roomNumberField, capacityField],
+  //   ACTIONS: [
+  //     onTypeFieldChange,
+  //     onPriceFieldChange,
+  //     onTimeInFieldChange,
+  //     onTimeOutFieldChange,
+  //     onRoomNumberFieldChange,
+  //     onCapacityFieldChange]
+  // };
+
   var mapFilters = window.main.map.querySelectorAll('.map__filter');
   var notiseForm = document.querySelector('.ad-form');
   var notiseFormFielsets = notiseForm.querySelectorAll('fieldset');
+  var titleField = notiseForm.querySelector('#title');
   var addressField = notiseForm.querySelector('#address');
   var typeField = notiseForm.querySelector('#type');
   var priceField = notiseForm.querySelector('#price');
@@ -46,6 +60,31 @@
   var timeOutField = notiseForm.querySelector('#timeout');
   var roomNumberField = notiseForm.querySelector('#room_number');
   var capacityField = notiseForm.querySelector('#capacity');
+  // var notiseFormFielsets = notiseForm.querySelectorAll('fieldset');
+
+  var Listener = {
+    FIELDS: [typeField, priceField, timeInField, timeOutField, roomNumberField, capacityField],
+    ACTIONS: [
+      function onTypeFieldChange() {
+        validityPrice();
+      },
+      function onPriceFieldChange() {
+        validityPrice();
+      },
+      function onTimeInFieldChange() {
+        validityTimeOut();
+      },
+      function onTimeOutFieldChange() {
+        validityTimeIn();
+      },
+      function onRoomNumberFieldChange() {
+        validityRoomsAndCapacity();
+      },
+      function onCapacityFieldChange() {
+        validityRoomsAndCapacity();
+      }
+    ]
+  };
 
   var deactivateForm = function () {
     notiseFormFielsets.forEach(function (item) {
@@ -54,6 +93,10 @@
     for (var i = 0; i < mapFilters.length; i++) {
       mapFilters[i].disabled = true;
     }
+
+    Listener.FIELDS.forEach(function (item, index) {
+      removeListener(item, Listener.ACTIONS[index]);
+    });
   };
 
   var activateForm = function () {
@@ -64,8 +107,27 @@
     for (var i = 0; i < mapFilters.length; i++) {
       mapFilters[i].removeAttribute('disabled');
     }
-    window.render.renderPins();
+    window.render.makeCardBlock();
+    window.backend.load(window.main.onGetSuccess);
     addressField.setAttribute('readonly', true);
+
+    Listener.FIELDS.forEach(function (item, index) {
+      addListener(item, Listener.ACTIONS[index]);
+    });
+  };
+
+  var addListener = function (element, action) {
+    return element.addEventListener('change', action);
+  };
+
+  var removeListener = function (element, action) {
+    return element.removeEventListener('change', action);
+  };
+
+  var initForm = function (title, price) {
+    title.minLength = TitleRange.MIN_LENGTH;
+    title.maxLength = TitleRange.MAX_LENGTH;
+    price.required = true;
   };
 
   var getPinPosition = function () {
@@ -76,25 +138,22 @@
   var changePinPosition = function () {
     var mainPinInfo = window.main.getMainPinInfo();
     var newX = Math.round(mainPinInfo.x + mainPinInfo.width / 2);
-    var newY = Math.round(mainPinInfo.y - mainPinInfo.height - NEEDLE_HEIGHT);
+    var newY = Math.round(mainPinInfo.y - mainPinInfo.height - window.constants.NEEDLE_HEIGHT);
     addressField.value = newX + ', ' + newY;
   };
 
-  // roomNumberField.children[0].removeAttribute('selected');
-  // capacityField.children[0].removeAttribute('selected');
-
   var validityPrice = function () {
     var minPrice = MinPrice.BUNGALO;
-    if (typeField.value === TYPE.flat) {
+    if (typeField.value === AppartmentType.flat) {
       minPrice = MinPrice.FLAT;
-    } else if (typeField.value === TYPE.house) {
+    } else if (typeField.value === AppartmentType.house) {
       minPrice = MinPrice.HOUSE;
     } else {
       minPrice = MinPrice.PALACE;
     }
     if (priceField.value < minPrice) {
       priceField.setCustomValidity(ErrorMessages.price.MIN + minPrice);
-    } else if (priceField.value > MAX_PRICE) {
+    } else if (priceField.value > window.constants.MAX_PRICE) {
       priceField.setCustomValidity(ErrorMessages.price.MAX);
     } else {
       priceField.setCustomValidity('');
@@ -119,19 +178,23 @@
     }
   };
 
-  typeField.addEventListener('change', validityPrice);
-  priceField.addEventListener('change', validityPrice);
-  timeInField.addEventListener('change', validityTimeOut);
-  timeOutField.addEventListener('change', validityTimeIn);
-  roomNumberField.addEventListener('change', validityRoomsAndCapacity);
-  capacityField.addEventListener('change', validityRoomsAndCapacity);
-
   deactivateForm();
   getPinPosition();
 
-  window.filters = {
+  document.addEventListener('DOMContentLoaded', initForm.bind(null, titleField, priceField));
+
+  var onPostSuccess = function () {
+    titleField.textContent = '';
+    window.backend.showSuccessMessage();
+  };
+
+  notiseForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(notiseForm), onPostSuccess);
+  });
+
+  window.form = {
     activateForm: activateForm,
-    getPinPosition: getPinPosition,
     changePinPosition: changePinPosition
   };
 })();
