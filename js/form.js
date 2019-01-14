@@ -40,6 +40,7 @@
 
   var mapFilters = window.main.map.querySelectorAll('.map__filter');
   var notiseForm = document.querySelector('.ad-form');
+  var resetForm = notiseForm.querySelector('.ad-form__reset');
   var notiseFormFielsets = notiseForm.querySelectorAll('fieldset');
   var titleField = notiseForm.querySelector('#title');
   var addressField = notiseForm.querySelector('#address');
@@ -125,13 +126,31 @@
     return element.removeEventListener(Listener.EVENT, action);
   };
 
-  var deactivateForm = function () {
-    notiseFormFielsets.forEach(function (item) {
-      item.disabled = true;
+  var switchDisable = function (element, value) {
+    element.forEach(function (item) {
+      item.disabled = value;
     });
-    for (var i = 0; i < mapFilters.length; i++) {
-      mapFilters[i].disabled = true;
-    }
+  };
+
+  var cleanMap = function () {
+    var mapPins = window.main.map.querySelectorAll('.map__pin:not(.map__pin--main)');
+    var mapCard = window.main.map.querySelector('.map__card');
+    mapPins.forEach(function (item) {
+      item.remove();
+    });
+    mapCard.remove();
+  };
+
+  var deactivateForm = function () {
+    window.main.map.classList.add('map--faded');
+    notiseForm.classList.add('ad-form--disabled');
+    notiseForm.reset();
+
+    window.util.setPosition(window.main.mainPin, window.constants.MAIN_PIN.left, window.constants.MAIN_PIN.top);
+    getPinPosition();
+
+    switchDisable(mapFilters, true);
+    switchDisable(notiseFormFielsets, true);
 
     Listener.FIELDS.forEach(function (item, index) {
       removeListener(item, Listener.ACTIONS[index]);
@@ -140,14 +159,14 @@
 
   var activateForm = function () {
     notiseForm.classList.remove('ad-form--disabled');
-    notiseFormFielsets.forEach(function (item) {
-      item.removeAttribute('disabled');
-    });
-    for (var i = 0; i < mapFilters.length; i++) {
-      mapFilters[i].removeAttribute('disabled');
-    }
+    switchDisable(notiseFormFielsets, false);
+    switchDisable(mapFilters, false);
     window.render.makeCardBlock();
-    window.backend.load(window.main.onGetSuccess);
+
+    if (window.main.map.querySelectorAll('.map__pin').length === 1) {
+      window.backend.load(window.main.onGetSuccess);
+    }
+
     addressField.setAttribute('readonly', true);
 
     Listener.FIELDS.forEach(function (item, index) {
@@ -155,8 +174,18 @@
     });
   };
 
+  var resetAdvertForm = function () {
+    deactivateForm();
+    cleanMap();
+  };
+
   deactivateForm();
   getPinPosition();
+
+  resetForm.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    resetAdvertForm();
+  });
 
   document.addEventListener('DOMContentLoaded', initForm.bind(null, titleField, priceField));
 
@@ -171,6 +200,7 @@
   });
 
   window.form = {
+    deactivateForm: deactivateForm,
     activateForm: activateForm,
     changePinPosition: changePinPosition
   };

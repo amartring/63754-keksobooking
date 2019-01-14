@@ -25,9 +25,15 @@
     return element;
   };
 
+  var setPosition = function (element, left, top) {
+    element.style.left = left + window.render.Unit.POSITION;
+    element.style.top = top + window.render.Unit.POSITION;
+  };
+
   window.util = {
     getRandomNumber: getRandomNumber,
     shuffleArray: shuffleArray,
-    makeElement: makeElement
+    makeElement: makeElement,
+    setPosition: setPosition
   };
 })();

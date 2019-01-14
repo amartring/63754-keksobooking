@@ -18,6 +18,10 @@
     height: 40,
     alt: 'Фотография жилья'
   };
+  var MAIN_PIN = {
+    left: 570,
+    top: 375
+  };
   var PIN = {
     width: 50,
     height: 70
@@ -35,6 +39,7 @@
     FEATURE: FEATURE,
     CHECK: CHECK,
     IMG: IMG,
+    MAIN_PIN: MAIN_PIN,
     PIN: PIN,
     LIMIT_Y: LIMIT_Y,
     NEEDLE_HEIGHT: NEEDLE_HEIGHT,

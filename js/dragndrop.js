@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var activated = false;
-
   var calcStartCoords = function (evt) {
     return {
       x: evt.pageX + window.constants.PIN.width / 2,
@@ -53,17 +51,13 @@
       startCoords = calcStartCoords(moveEvt);
       var finalPinCoords = calcNewCoords(moveEvt, shift, window.main.map);
 
-      window.main.mainPin.style.left = finalPinCoords.x + window.render.Unit.POSITION;
-      window.main.mainPin.style.top = finalPinCoords.y + window.render.Unit.POSITION;
+      window.util.setPosition(window.main.mainPin, finalPinCoords.x, finalPinCoords.y);
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
       window.main.map.classList.remove('map--faded');
-      if (activated === false) {
-        window.form.activateForm();
-        activated = true;
-      }
+      window.form.activateForm();
       window.form.changePinPosition();
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);

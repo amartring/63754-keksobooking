@@ -31,7 +31,6 @@
   var onGetSuccess = function (data) {
     bids = data.slice();
     window.render.renderPins(bids);
-    console.log(bids);
   };
 
   window.main = {
