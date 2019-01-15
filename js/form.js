@@ -138,7 +138,9 @@
     mapPins.forEach(function (item) {
       item.remove();
     });
-    mapCard.remove();
+    if (mapCard) {
+      mapCard.classList.add('hidden');
+    }
   };
 
   var deactivateForm = function () {
@@ -200,6 +202,8 @@
   });
 
   window.form = {
+    mapFilters: mapFilters,
+    cleanMap: cleanMap,
     deactivateForm: deactivateForm,
     activateForm: activateForm,
     changePinPosition: changePinPosition

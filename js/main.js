@@ -31,6 +31,14 @@
   var onGetSuccess = function (data) {
     bids = data.slice();
     window.render.renderPins(bids);
+
+    window.form.mapFilters.forEach(function (item) {
+      item.addEventListener('change', function () {
+        var filteredAdverts = window.filter.filterAdverts(bids);
+        window.form.cleanMap();
+        window.render.renderPins(filteredAdverts);
+      });
+    });
   };
 
   window.main = {

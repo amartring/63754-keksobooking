@@ -32,7 +32,16 @@
   };
   var NEEDLE_HEIGHT = 22;
   var MAX_PRICE = 1000000;
-
+  var PRICE = {
+    min: 10000,
+    max: 50000
+  };
+  var PRICE_FILTER = {
+    low: 'low',
+    middle: 'middle',
+    high: 'high'
+  };
+  var NO_FILTER = 'any';
 
   window.constants = {
     LINK: LINK,
@@ -43,6 +52,9 @@
     PIN: PIN,
     LIMIT_Y: LIMIT_Y,
     NEEDLE_HEIGHT: NEEDLE_HEIGHT,
-    MAX_PRICE: MAX_PRICE
+    MAX_PRICE: MAX_PRICE,
+    PRICE: PRICE,
+    PRICE_FILTER: PRICE_FILTER,
+    NO_FILTER: NO_FILTER
   };
 })();
