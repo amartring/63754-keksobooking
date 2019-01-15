@@ -6,7 +6,8 @@
   var priceFilter = filtersContainer.querySelector('#housing-price');
   var roomsFilter = filtersContainer.querySelector('#housing-rooms');
   var guestsFilter = filtersContainer.querySelector('#housing-guests');
-  // var featuresFilter = filtersContainer.querySelector('#housing-features');
+  var featuresFilter = filtersContainer.querySelector('#housing-features');
+  var featuresList = featuresFilter.querySelectorAll('.map__checkbox');
 
   var filterAdverts = function (advertsList) {
     if (typeFilter.value !== window.constants.NO_FILTER) {
@@ -46,7 +47,31 @@
     return advertsList;
   };
 
+  var findFeatures = function (array, value) {
+    var result = false;
+    for (var i = 0; i < array.length; i++) {
+      result = (array[i] === value);
+      if (result) {
+        break;
+      }
+    }
+    return result;
+  };
+
+  var checkFeatures = function (advertsList) {
+    featuresList.forEach(function (item) {
+      if (item.checked) {
+        advertsList = advertsList.filter(function (advert) {
+          return findFeatures(advert.offer.features, item.value);
+        });
+      }
+    });
+    return advertsList;
+  };
+
   window.filter = {
-    filterAdverts: filterAdverts
+    featuresList: featuresList,
+    filterAdverts: filterAdverts,
+    checkFeatures: checkFeatures
   };
 })();

@@ -30,10 +30,17 @@
     element.style.top = top + window.render.Unit.POSITION;
   };
 
+  var switchDisable = function (element, value) {
+    element.forEach(function (item) {
+      item.disabled = value;
+    });
+  };
+
   window.util = {
     getRandomNumber: getRandomNumber,
     shuffleArray: shuffleArray,
     makeElement: makeElement,
-    setPosition: setPosition
+    setPosition: setPosition,
+    switchDisable: switchDisable
   };
 })();

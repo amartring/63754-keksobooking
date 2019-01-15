@@ -126,23 +126,6 @@
     return element.removeEventListener(Listener.EVENT, action);
   };
 
-  var switchDisable = function (element, value) {
-    element.forEach(function (item) {
-      item.disabled = value;
-    });
-  };
-
-  var cleanMap = function () {
-    var mapPins = window.main.map.querySelectorAll('.map__pin:not(.map__pin--main)');
-    var mapCard = window.main.map.querySelector('.map__card');
-    mapPins.forEach(function (item) {
-      item.remove();
-    });
-    if (mapCard) {
-      mapCard.classList.add('hidden');
-    }
-  };
-
   var deactivateForm = function () {
     window.main.map.classList.add('map--faded');
     notiseForm.classList.add('ad-form--disabled');
@@ -151,8 +134,8 @@
     window.util.setPosition(window.main.mainPin, window.constants.MAIN_PIN.left, window.constants.MAIN_PIN.top);
     getPinPosition();
 
-    switchDisable(mapFilters, true);
-    switchDisable(notiseFormFielsets, true);
+    window.util.switchDisable(mapFilters, true);
+    window.util.switchDisable(notiseFormFielsets, true);
 
     Listener.FIELDS.forEach(function (item, index) {
       removeListener(item, Listener.ACTIONS[index]);
@@ -161,8 +144,7 @@
 
   var activateForm = function () {
     notiseForm.classList.remove('ad-form--disabled');
-    switchDisable(notiseFormFielsets, false);
-    switchDisable(mapFilters, false);
+    window.util.switchDisable(mapFilters, false);
     window.render.makeCardBlock();
 
     if (window.main.map.querySelectorAll('.map__pin').length === 1) {
@@ -178,7 +160,7 @@
 
   var resetAdvertForm = function () {
     deactivateForm();
-    cleanMap();
+    window.main.cleanMap();
   };
 
   deactivateForm();
@@ -203,7 +185,7 @@
 
   window.form = {
     mapFilters: mapFilters,
-    cleanMap: cleanMap,
+    notiseFormFielsets: notiseFormFielsets,
     deactivateForm: deactivateForm,
     activateForm: activateForm,
     changePinPosition: changePinPosition

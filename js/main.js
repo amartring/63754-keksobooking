@@ -28,16 +28,39 @@
     };
   };
 
+  var cleanMap = function () {
+    var mapPins = window.main.map.querySelectorAll('.map__pin:not(.map__pin--main)');
+    var mapCard = window.main.map.querySelector('.map__card');
+    mapPins.forEach(function (item) {
+      item.remove();
+    });
+    if (mapCard) {
+      mapCard.classList.add('hidden');
+    }
+  };
+
   var onGetSuccess = function (data) {
     bids = data.slice();
     window.render.renderPins(bids);
+    window.util.switchDisable(window.form.notiseFormFielsets, false);
+
+    var checkFilters = function () {
+      var filteredAdverts;
+      filteredAdverts = window.filter.filterAdverts(bids);
+      filteredAdverts = window.filter.checkFeatures(filteredAdverts);
+
+      if (filteredAdverts) {
+        cleanMap();
+        window.render.renderPins(filteredAdverts);
+      }
+    };
 
     window.form.mapFilters.forEach(function (item) {
-      item.addEventListener('change', function () {
-        var filteredAdverts = window.filter.filterAdverts(bids);
-        window.form.cleanMap();
-        window.render.renderPins(filteredAdverts);
-      });
+      item.addEventListener('change', checkFilters);
+    });
+
+    window.filter.featuresList.forEach(function (item) {
+      item.addEventListener('click', checkFilters);
     });
   };
 
@@ -47,6 +70,7 @@
     mainPin: mainPin,
     getCoordsX: getCoordsX,
     getMainPinInfo: getMainPinInfo,
+    cleanMap: cleanMap,
     onGetSuccess: onGetSuccess
   };
 })();
