@@ -56,11 +56,11 @@
     };
 
     window.form.mapFilters.forEach(function (item) {
-      item.addEventListener('change', checkFilters);
+      item.addEventListener('change', window.debounce.bind(null, checkFilters));
     });
 
     window.filter.featuresList.forEach(function (item) {
-      item.addEventListener('click', checkFilters);
+      item.addEventListener('click', window.debounce.bind(null, checkFilters));
     });
   };
 
